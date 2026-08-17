@@ -31,6 +31,16 @@
     p => `${p} cleared the ${rooms()} boss level. Achievement unlocked: Sauberkeit.`,
     p => `${p} made the ${rooms()} presentable for exactly one visitor's worth of time.`,
     p => `${p} scrubbed the ${rooms()} like the Wohnungsübergabe depends on it.`,
+    p => `${p} vs. the ${rooms()}: final score, ${p} 1 — Chaos 0.`,
+    p => `Witnesses report ${p} was seen holding a sponge near the ${rooms()}. Miracles happen.`,
+    p => `${p} has entered the ${rooms()} chat. Grime has left the ${rooms()} chat.`,
+    p => `The ${rooms()} briefly considered filing a complaint. Then ${p} showed up.`,
+    p => `${p} performed an emergency intervention on the ${rooms()}. Patient stable. 🩺`,
+    p => `${p} channeled their inner Hausmeister and the ${rooms()} obeyed.`,
+    p => `Local hero ${p} defends the ${rooms()} from certain WG-shame once again.`,
+    p => `${p} did the thing nobody asked for out loud but everyone was thinking: cleaned the ${rooms()}.`,
+    p => `${p} left the ${rooms()} cleaner than they found their own motivation to do it.`,
+    p => `Sponsored by ${p}: today's episode of "The ${rooms()} Strikes Back... and Loses."`,
   ];
 
   const TRASH_TEMPLATES = [
@@ -40,6 +50,32 @@
     p => `${p} sorted the ${bins()} with German-level precision.`,
     p => `${p} freed the kitchen from the ${bins()}. One small step for man, one giant step for Mülltrennung.`,
     p => `${p} took out the ${bins()} before anyone had to ask twice. Legend.`,
+    p => `${p} has achieved perfect Mülltrennung karma with the ${bins()} run.`,
+    p => `Somewhere, a German neighbor nodded in approval as ${p} sorted the ${bins()}.`,
+    p => `${p} carried the ${bins()} past the door like it owed them money.`,
+    p => `${p} single-handedly prevented a smell-based WG emergency: ${bins()}, taken out.`,
+    p => `Plot twist: ${p} remembered bin day. The ${bins()} are gone.`,
+    p => `${p} completed a stealth mission: get the ${bins()} out before Razim/Mahin/Jubayer notices it was full.`,
+    p => `The ${bins()} have been evicted from the apartment, courtesy of ${p}.`,
+    p => `${p} gave the ${bins()} a one-way ticket downstairs. No survivors.`,
+    p => `Rumor has it ${p} can smell an overflowing bin from two rooms away. The ${bins()} confirm it.`,
+    p => `${p} earned this week's Recycling Merit Badge for the ${bins()} run. 🏅`,
+  ];
+
+  const DONE_TEMPLATES = [
+    (p, d) => `${p}'s report has been filed for ${d}. The Amt is pleased.`,
+    (p, d) => `Stamped, sealed, delivered — ${p} is officially off the hook for ${d}.`,
+    (p, d) => `${p}'s ${d} report now lives in the Aktenordner forever. History has been made.`,
+    (p, d) => `Filed under "Reasons ${p} is a good roommate," dated ${d}.`,
+    (p, d) => `${p}'s paperwork is in order. The Putzamt has no further questions about ${d}.`,
+    (p, d) => `Officially logged: ${p} did a thing on ${d}. The bureaucracy thanks you.`,
+  ];
+
+  const EMPTY_LOG_TEMPLATES = [
+    "No entries yet — be the first to earn your stamp.",
+    "The Aktenordner is suspiciously empty. Someone fix that.",
+    "Zero reports on file. The bins are judging you.",
+    "This is awkward — nobody has filed anything yet.",
   ];
 
   let _detailWords = [];
@@ -195,12 +231,9 @@
         }),
       });
       if (!res.ok) throw new Error("Request failed");
-      const result = await res.json();
-      const created = Number(result.created) || state.details.length;
-      const reportWord = created === 1 ? "report" : "reports";
-      const verb = created === 1 ? "has" : "have";
 
-      doneText.textContent = `${state.person}'s ${reportWord} (${created}) ${verb} been filed for ${formatDate(state.date)}.`;
+      const doneMsg = DONE_TEMPLATES[Math.floor(Math.random() * DONE_TEMPLATES.length)];
+      doneText.textContent = doneMsg(state.person, formatDate(state.date));
       showPanel("done");
       stampAnim.querySelector(".stamp-mark").style.animation = "none";
       void stampAnim.offsetWidth;
@@ -236,23 +269,33 @@
 
   function renderLog(entries){
     if (!entries.length) {
-      logFeed.innerHTML = `<p class="log-empty">No entries yet — be the first to earn your stamp.</p>`;
+      const msg = EMPTY_LOG_TEMPLATES[Math.floor(Math.random() * EMPTY_LOG_TEMPLATES.length)];
+      logFeed.innerHTML = `<p class="log-empty">${msg}</p>`;
       return;
     }
-    logFeed.innerHTML = entries.map(entry => {
+    const rows = entries.map(entry => {
       const msg = funnyMessage(entry);
       const details = JSON.parse(entry.details);
-      const primaryTone = entry.action_type === "cleaning" ? "clean" : (DETAIL_LOOKUP[details[0]] || {}).tone || "clean";
+      const labels = details.map(k => (DETAIL_LOOKUP[k] ? DETAIL_LOOKUP[k].label : k)).join(", ");
+      const taskWord = entry.action_type === "cleaning" ? "Cleaning" : "Trash";
       const icon = entry.action_type === "cleaning" ? "🧽" : "🗑️";
+      const who = entry.person.toLowerCase();
       return `
-        <div class="log-entry">
-          <div class="log-stamp tone-${primaryTone}">${icon}</div>
-          <div class="log-text">
-            <p class="log-msg">${msg}</p>
-            <p class="log-meta">${entry.person} · ${formatDate(entry.entry_date)}</p>
-          </div>
-        </div>`;
+        <tr class="who-${who}">
+          <td data-label="Date">${formatDate(entry.entry_date)}</td>
+          <td data-label="Who"><span class="badge tone-${who}">${entry.person}</span></td>
+          <td data-label="Task">${icon} ${taskWord} — ${labels}</td>
+          <td data-label="Note">${msg}</td>
+        </tr>`;
     }).join("");
+
+    logFeed.innerHTML = `
+      <table class="log-table">
+        <thead>
+          <tr><th>Date</th><th>Who</th><th>Task</th><th>Note</th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
   }
 
   refreshBtn.addEventListener("click", loadLog);

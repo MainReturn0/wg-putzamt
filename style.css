@@ -19,6 +19,18 @@
   --kitchen: #B85C2C;
   --kitchen-bg: #F5E6D9;
 
+  --jubayer: #2F4B8C;
+  --jubayer-bg: #E3E8F5;
+  --mahin: #8E4585;
+  --mahin-bg: #F1E3EE;
+  --razim: #3F8F5C;
+  --razim-bg: #E1F0E6;
+
+  --act-clean: #2F6E6E;
+  --act-clean-bg: #E3EFEE;
+  --act-trash: #6B7A3A;
+  --act-trash-bg: #ECEEDD;
+
   --font-display: "Oswald", "Arial Narrow", sans-serif;
   --font-body: "Work Sans", -apple-system, sans-serif;
   --font-mono: "IBM Plex Mono", "Courier New", monospace;
@@ -162,18 +174,22 @@ body{
   font-family:var(--font-body);
   background:var(--paper);
   border:1.5px solid var(--line);
-  border-radius:6px;
+  border-top:4px solid var(--line);
+  border-radius:8px;
   padding:16px 8px;
   display:flex;
   flex-direction:column;
   align-items:center;
   gap:6px;
   cursor:pointer;
-  transition:border-color .15s, transform .1s, background .15s;
+  transition:border-color .15s, transform .12s, background .15s, box-shadow .15s;
   text-align:center;
 }
-.pick-card:hover{ border-color:var(--ink); }
-.pick-card:active{ transform:scale(0.97); }
+.pick-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 4px 10px rgba(36,33,25,0.08);
+}
+.pick-card:active{ transform:translateY(0) scale(0.97); }
 .pick-card:focus-visible{ outline:2px solid var(--red); outline-offset:2px; }
 
 .pick-card .initial{
@@ -182,27 +198,45 @@ body{
   width:36px; height:36px;
   border-radius:50%;
   background:var(--ink);
-  color:var(--paper);
+  color:#fff;
   display:flex; align-items:center; justify-content:center;
 }
 .pick-card .name{ font-weight:600; font-size:14.5px; }
 .pick-card .emoji{ font-size:28px; }
 .pick-card .sub{ font-size:11.5px; color:var(--ink-soft); font-family:var(--font-mono); }
 
-.pick-card.selected{
-  border-color:var(--red);
-  background:#FDF1EF;
-}
-.pick-card.selected .initial{ background:var(--red); }
-
 .pick-card.big{ padding:22px 10px; }
 
-/* Detail cards get category colour once rendered by JS via data-color */
-.pick-card[data-tone="bio"].selected{ border-color:var(--bio); background:var(--bio-bg); }
-.pick-card[data-tone="plastic"].selected{ border-color:var(--plastic); background:var(--plastic-bg); }
-.pick-card[data-tone="paper"].selected{ border-color:var(--paper-bin); background:var(--paper-bin-bg); }
-.pick-card[data-tone="bathroom"].selected{ border-color:var(--bathroom); background:var(--bathroom-bg); }
-.pick-card[data-tone="kitchen"].selected{ border-color:var(--kitchen); background:var(--kitchen-bg); }
+/* --- Colored boxes: every card carries its category color, even before selection --- */
+.pick-card[data-tone]{ background:var(--tone-bg); border-top-color:var(--tone); }
+.pick-card[data-tone]:hover{ border-color:var(--tone); }
+.pick-card[data-tone] .initial{ background:var(--tone); }
+
+.pick-card[data-tone="bio"]{ --tone:var(--bio); --tone-bg:var(--bio-bg); }
+.pick-card[data-tone="plastic"]{ --tone:var(--plastic); --tone-bg:var(--plastic-bg); }
+.pick-card[data-tone="paper"]{ --tone:var(--paper-bin); --tone-bg:var(--paper-bin-bg); }
+.pick-card[data-tone="bathroom"]{ --tone:var(--bathroom); --tone-bg:var(--bathroom-bg); }
+.pick-card[data-tone="kitchen"]{ --tone:var(--kitchen); --tone-bg:var(--kitchen-bg); }
+.pick-card[data-tone="jubayer"]{ --tone:var(--jubayer); --tone-bg:var(--jubayer-bg); }
+.pick-card[data-tone="mahin"]{ --tone:var(--mahin); --tone-bg:var(--mahin-bg); }
+.pick-card[data-tone="razim"]{ --tone:var(--razim); --tone-bg:var(--razim-bg); }
+.pick-card[data-tone="act-clean"]{ --tone:var(--act-clean); --tone-bg:var(--act-clean-bg); }
+.pick-card[data-tone="act-trash"]{ --tone:var(--act-trash); --tone-bg:var(--act-trash-bg); }
+
+/* Selected = solid fill, white text, deeper border */
+.pick-card.selected{
+  background:var(--tone, var(--red));
+  border-color:var(--tone, var(--red));
+  border-top-color:var(--tone, var(--red));
+}
+.pick-card.selected .name,
+.pick-card.selected .sub{ color:#fff; }
+.pick-card.selected .initial{
+  background:#fff;
+  color:var(--tone, var(--red));
+}
+/* Plain (no data-tone) cards fall back to red on selection — none currently, kept for safety */
+.pick-card.selected:not([data-tone]){ background:#FDF1EF; }
 
 .card-grid + .submit-btn{ margin-top:14px; }
 
@@ -346,7 +380,7 @@ body{
 }
 .refresh-btn:hover{ color:var(--ink); border-color:var(--ink); }
 
-.log-feed{ padding-top:8px; }
+.log-feed{ padding-top:8px; overflow-x:auto; }
 .log-empty{
   font-family:var(--font-mono);
   color:var(--ink-soft);
@@ -354,35 +388,84 @@ body{
   padding:16px 0;
 }
 
-.log-entry{
-  display:flex;
-  gap:12px;
-  padding:12px 0;
-  border-bottom:1px dashed var(--line);
+.log-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13.5px;
 }
-.log-entry:last-child{ border-bottom:none; }
-
-.log-stamp{
-  flex:0 0 auto;
-  width:34px; height:34px;
-  border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  font-size:15px;
-  border:2px solid var(--ink);
-  transform:rotate(-6deg);
-  margin-top:2px;
-}
-.log-stamp.tone-bio{ border-color:var(--bio); color:var(--bio); background:var(--bio-bg); }
-.log-stamp.tone-plastic{ border-color:var(--plastic); color:var(--plastic); background:var(--plastic-bg); }
-.log-stamp.tone-paper{ border-color:var(--paper-bin); color:var(--paper-bin); background:var(--paper-bin-bg); }
-.log-stamp.tone-clean{ border-color:var(--bathroom); color:var(--bathroom); background:var(--bathroom-bg); }
-
-.log-text{ flex:1; }
-.log-msg{ font-size:14.5px; line-height:1.5; margin:0 0 3px; }
-.log-meta{
+.log-table thead th{
+  text-align:left;
   font-family:var(--font-mono);
-  font-size:11.5px;
+  font-size:10.5px;
+  text-transform:uppercase;
+  letter-spacing:0.6px;
   color:var(--ink-soft);
+  font-weight:600;
+  padding:0 10px 8px;
+  border-bottom:2px solid var(--ink);
+}
+.log-table tbody td{
+  padding:10px;
+  border-bottom:1px dashed var(--line);
+  vertical-align:top;
+}
+.log-table tbody tr:hover{ background:var(--paper-dark); }
+.log-table td[data-label="Date"]{
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  color:var(--ink-soft);
+  white-space:nowrap;
+}
+.log-table td[data-label="Task"]{ white-space:nowrap; }
+.log-table td[data-label="Note"]{ color:var(--ink-soft); line-height:1.45; }
+
+.badge{
+  display:inline-block;
+  padding:3px 10px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:600;
+  color:#fff;
+  white-space:nowrap;
+}
+.badge.tone-jubayer{ background:var(--jubayer); }
+.badge.tone-mahin{ background:var(--mahin); }
+.badge.tone-razim{ background:var(--razim); }
+
+/* Mobile: collapse the table into labeled stacked cards */
+@media (max-width:560px){
+  .log-table thead{ display:none; }
+  .log-table, .log-table tbody, .log-table tr, .log-table td{ display:block; width:100%; }
+  .log-table tr{
+    border:1px solid var(--line);
+    border-left:4px solid var(--line);
+    border-radius:6px;
+    padding:8px 12px;
+    margin-bottom:10px;
+  }
+  .log-table tr.who-jubayer{ border-left-color:var(--jubayer); }
+  .log-table tr.who-mahin{ border-left-color:var(--mahin); }
+  .log-table tr.who-razim{ border-left-color:var(--razim); }
+  .log-table td{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+    padding:5px 0;
+    border-bottom:none;
+  }
+  .log-table td::before{
+    content:attr(data-label);
+    flex:0 0 auto;
+    font-family:var(--font-mono);
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    color:var(--ink-soft);
+    padding-top:2px;
+  }
+  .log-table td[data-label="Note"]{ flex-direction:column; }
+  .log-table td[data-label="Note"]::before{ margin-bottom:2px; }
 }
 
 .foot{
