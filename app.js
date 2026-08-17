@@ -195,8 +195,12 @@
         }),
       });
       if (!res.ok) throw new Error("Request failed");
+      const result = await res.json();
+      const created = Number(result.created) || state.details.length;
+      const reportWord = created === 1 ? "report" : "reports";
+      const verb = created === 1 ? "has" : "have";
 
-      doneText.textContent = `${state.person}'s report has been filed for ${formatDate(state.date)}.`;
+      doneText.textContent = `${state.person}'s ${reportWord} (${created}) ${verb} been filed for ${formatDate(state.date)}.`;
       showPanel("done");
       stampAnim.querySelector(".stamp-mark").style.animation = "none";
       void stampAnim.offsetWidth;

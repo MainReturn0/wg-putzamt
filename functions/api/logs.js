@@ -32,11 +32,14 @@ export async function onRequestPost(context) {
   if (!details.every(d => VALID_DETAILS[action_type].has(d))) return jsonError("Invalid detail for this action_type", 400);
   if (typeof entry_date !== "string" || !DATE_RE.test(entry_date)) return jsonError("entry_date must be YYYY-MM-DD", 400);
 
-  await env.DB.prepare(
-    "INSERT INTO logs (person, action_type, details, entry_date) VALUES (?, ?, ?, ?)"
-  ).bind(person, action_type, JSON.stringify(details), entry_date).run();
+  const uniqueDetails = [...new Set(details)];
+  for (const detail of uniqueDetails) {
+    await env.DB.prepare(
+      "INSERT INTO logs (person, action_type, details, entry_date) VALUES (?, ?, ?, ?)"
+    ).bind(person, action_type, JSON.stringify([detail]), entry_date).run();
+  }
 
-  return Response.json({ success: true }, { status: 201 });
+  return Response.json({ success: true, created: uniqueDetails.length }, { status: 201 });
 }
 
 function jsonError(message, status) {
