@@ -274,25 +274,22 @@
       return;
     }
     const rows = entries.map(entry => {
-      const msg = funnyMessage(entry);
       const details = JSON.parse(entry.details);
       const labels = details.map(k => (DETAIL_LOOKUP[k] ? DETAIL_LOOKUP[k].label : k)).join(", ");
       const taskWord = entry.action_type === "cleaning" ? "Cleaning" : "Trash";
-      const icon = entry.action_type === "cleaning" ? "🧽" : "🗑️";
       const who = entry.person.toLowerCase();
       return `
         <tr class="who-${who}">
+          <td data-label="Name"><span class="badge tone-${who}">${entry.person}</span></td>
+          <td data-label="Task Done">${taskWord} — ${labels}</td>
           <td data-label="Date">${formatDate(entry.entry_date)}</td>
-          <td data-label="Who"><span class="badge tone-${who}">${entry.person}</span></td>
-          <td data-label="Task">${icon} ${taskWord} — ${labels}</td>
-          <td data-label="Note">${msg}</td>
         </tr>`;
     }).join("");
 
     logFeed.innerHTML = `
       <table class="log-table">
         <thead>
-          <tr><th>Date</th><th>Who</th><th>Task</th><th>Note</th></tr>
+          <tr><th>Name</th><th>Task Done</th><th>Date</th></tr>
         </thead>
         <tbody>${rows}</tbody>
       </table>`;

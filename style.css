@@ -416,8 +416,7 @@ body{
   color:var(--ink-soft);
   white-space:nowrap;
 }
-.log-table td[data-label="Task"]{ white-space:nowrap; }
-.log-table td[data-label="Note"]{ color:var(--ink-soft); line-height:1.45; }
+.log-table td[data-label="Task Done"]{ color:var(--ink-soft); line-height:1.45; }
 
 .badge{
   display:inline-block;
@@ -464,8 +463,8 @@ body{
     color:var(--ink-soft);
     padding-top:2px;
   }
-  .log-table td[data-label="Note"]{ flex-direction:column; }
-  .log-table td[data-label="Note"]::before{ margin-bottom:2px; }
+  .log-table td[data-label="Task Done"]{ flex-direction:column; }
+  .log-table td[data-label="Task Done"]::before{ margin-bottom:2px; }
 }
 
 .foot{
