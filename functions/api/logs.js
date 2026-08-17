@@ -8,7 +8,7 @@ const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 let schemaReadyPromise = null;
 
 function checkAdmin(request, env) {
-  const adminSecret = env.ADMIN_PASSWORD || "wgputzamt2026";
+  const adminSecret = env.ADMIN_PASSWORD || "Jub@yer";
   return request.headers.get("x-admin-key") === adminSecret;
 }
 
