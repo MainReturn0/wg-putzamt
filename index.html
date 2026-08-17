@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WG Wollmarktstr. 63 — Putzamt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="sheet">
+
+  <header class="letterhead">
+    <div class="stamp-badge">§</div>
+    <div class="letterhead-text">
+      <h1>Putzamt</h1>
+      <p class="subline">Amtliches Reinigungs- &amp; Müllprotokoll · Wollmarktstr. 63, Paderborn</p>
+    </div>
+  </header>
+
+  <main class="form-window" id="formWindow">
+
+    <div class="form-progress">
+      <span class="progress-label">Formular</span>
+      <div class="progress-steps" id="progressSteps">
+        <span class="step active" data-step="1">1 Wer</span>
+        <span class="step" data-step="2">2 Was</span>
+        <span class="step" data-step="3">3 Details</span>
+        <span class="step" data-step="4">4 Datum</span>
+      </div>
+    </div>
+
+    <!-- STEP 1: WHO -->
+    <section class="step-panel active" data-panel="1">
+      <h2 class="q">Wer bist du?</h2>
+      <p class="hint">Select your name to begin the report.</p>
+      <div class="card-grid three" id="personGrid">
+        <button class="pick-card" data-person="Jubayer">
+          <span class="initial">J</span>
+          <span class="name">Jubayer</span>
+        </button>
+        <button class="pick-card" data-person="Mahin">
+          <span class="initial">M</span>
+          <span class="name">Mahin</span>
+        </button>
+        <button class="pick-card" data-person="Razim">
+          <span class="initial">R</span>
+          <span class="name">Razim</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- STEP 2: WHAT -->
+    <section class="step-panel" data-panel="2">
+      <h2 class="q">What did you handle, <span id="whoName2">—</span>?</h2>
+      <p class="hint">Choose the type of task.</p>
+      <div class="card-grid two">
+        <button class="pick-card big" data-action="cleaning">
+          <span class="emoji">🧽</span>
+          <span class="name">Cleaning</span>
+          <span class="sub">Bathroom / Kitchen</span>
+        </button>
+        <button class="pick-card big" data-action="trash">
+          <span class="emoji">🗑️</span>
+          <span class="name">Trash</span>
+          <span class="sub">Bio / Plastic / Paper</span>
+        </button>
+      </div>
+      <button class="back-link" data-back="1">← back</button>
+    </section>
+
+    <!-- STEP 3: DETAILS -->
+    <section class="step-panel" data-panel="3">
+      <h2 class="q" id="detailsQuestion">Which part(s)?</h2>
+      <p class="hint">You can pick more than one.</p>
+      <div class="card-grid three" id="detailsGrid"></div>
+      <button class="submit-btn" id="detailsContinueBtn" disabled>Continue</button>
+      <button class="back-link" data-back="2">← back</button>
+    </section>
+
+    <!-- STEP 4: DATE + SUBMIT -->
+    <section class="step-panel" data-panel="4">
+      <h2 class="q">When was this done?</h2>
+      <p class="hint">Defaults to today — change it if you're logging an earlier day.</p>
+
+      <div class="date-field">
+        <label for="entryDate">Date</label>
+        <input type="date" id="entryDate">
+      </div>
+
+      <div class="summary-box" id="summaryBox"></div>
+
+      <button class="submit-btn" id="submitBtn">Stamp &amp; File Report</button>
+      <button class="back-link" data-back="3">← back</button>
+    </section>
+
+    <!-- SUCCESS -->
+    <section class="step-panel" data-panel="done">
+      <div class="stamp-anim" id="stampAnim">
+        <div class="stamp-mark">ERLEDIGT</div>
+      </div>
+      <p class="done-text" id="doneText">Filed.</p>
+      <button class="submit-btn ghost" id="resetBtn">Log another task</button>
+    </section>
+
+  </main>
+
+  <section class="log-section">
+    <div class="log-header">
+      <h2>Aktenordner <span class="log-sub">(the log — newest first)</span></h2>
+      <button class="refresh-btn" id="refreshBtn" title="Refresh">⟳</button>
+    </div>
+    <div class="log-feed" id="logFeed">
+      <p class="log-empty">Loading the file...</p>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p>Wollmarktstr. 63 · Jubayer, Mahin &amp; Razim vs. the trash bins</p>
+  </footer>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

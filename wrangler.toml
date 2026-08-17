@@ -1,0 +1,8 @@
+name = "wg-putzamt"
+pages_build_output_dir = "."
+compatibility_date = "2025-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "wg-putzamt-db"
+database_id = "ed34ec5d-3a26-490a-b81d-802bbdba77eb"
