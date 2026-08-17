@@ -22,6 +22,7 @@
 
   const DETAIL_LOOKUP = {};
   Object.values(DETAIL_CONFIG).flat().forEach(d => DETAIL_LOOKUP[d.key] = d);
+  const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
   // ---------- Funny message templates ----------
   const CLEAN_TEMPLATES = [
@@ -119,8 +120,14 @@
   const resetBtn = document.getElementById("resetBtn");
   const doneText = document.getElementById("doneText");
   const stampAnim = document.getElementById("stampAnim");
-  const logFeed = document.getElementById("logFeed");
-  const refreshBtn = document.getElementById("refreshBtn");
+  const logsTableBody = document.getElementById("logs-table-body");
+  const refreshLogsBtn = document.getElementById("refresh-logs-btn");
+  const adminLoggedOut = document.getElementById("admin-logged-out");
+  const adminLoggedIn = document.getElementById("admin-logged-in");
+  const adminPassInput = document.getElementById("admin-pass-input");
+  const adminLoginBtn = document.getElementById("admin-login-btn");
+  const adminLogoutBtn = document.getElementById("admin-logout-btn");
+  let adminPasscode = localStorage.getItem("wg_admin_pass") || "";
 
   function todayISO(){
     const d = new Date();
@@ -208,8 +215,40 @@
   }
 
   function formatDate(iso){
+    if (!iso || !DATE_RE.test(iso)) return iso || "";
     const [y, m, d] = iso.split("-");
     return `${d}.${m}.${y}`;
+  }
+
+  function taskDoneText(entry) {
+    if (entry.task_text) return entry.task_text;
+    const details = JSON.parse(entry.details);
+    const labels = details.map(k => (DETAIL_LOOKUP[k] ? DETAIL_LOOKUP[k].label : k)).join(", ");
+    const taskWord = entry.action_type === "cleaning" ? "Cleaning" : "Trash";
+    return `${taskWord} — ${labels}`;
+  }
+
+  function escapeHtml(str) {
+    return String(str || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function updateAdminUI() {
+    const actionHeaders = document.querySelectorAll(".admin-cell-action");
+    const isAdmin = Boolean(adminPasscode);
+    adminLoggedOut.style.display = isAdmin ? "none" : "flex";
+    adminLoggedIn.style.display = isAdmin ? "flex" : "none";
+    actionHeaders.forEach(cell => {
+      cell.style.display = isAdmin ? "table-cell" : "none";
+    });
+  }
+
+  function renderLoadingRow() {
+    logsTableBody.innerHTML = `<tr><td colspan="4" class="log-empty">Loading logs...</td></tr>`;
   }
 
   document.querySelectorAll("[data-back]").forEach(btn => {
@@ -238,7 +277,7 @@
       stampAnim.querySelector(".stamp-mark").style.animation = "none";
       void stampAnim.offsetWidth;
       stampAnim.querySelector(".stamp-mark").style.animation = "";
-      loadLog();
+      renderLogsTable();
     } catch (err) {
       alert("Couldn't file the report — check your connection and try again.");
     } finally {
@@ -255,49 +294,144 @@
     showPanel(1);
   });
 
-  // ---------- Log feed ----------
-  async function loadLog(){
+  // ---------- Log table ----------
+  async function renderLogsTable(){
+    renderLoadingRow();
     try {
       const res = await fetch("/api/logs");
       if (!res.ok) throw new Error("Request failed");
       const entries = await res.json();
-      renderLog(entries);
+      renderLogRows(entries);
     } catch (err) {
-      logFeed.innerHTML = `<p class="log-empty">Couldn't load the log. Pull to refresh?</p>`;
+      logsTableBody.innerHTML = `<tr><td colspan="4" class="log-empty">Couldn't load the log.</td></tr>`;
     }
   }
 
-  function renderLog(entries){
+  function renderLogRows(entries){
     if (!entries.length) {
       const msg = EMPTY_LOG_TEMPLATES[Math.floor(Math.random() * EMPTY_LOG_TEMPLATES.length)];
-      logFeed.innerHTML = `<p class="log-empty">${msg}</p>`;
+      logsTableBody.innerHTML = `<tr><td colspan="4" class="log-empty">${escapeHtml(msg)}</td></tr>`;
       return;
     }
-    const rows = entries.map(entry => {
-      const details = JSON.parse(entry.details);
-      const labels = details.map(k => (DETAIL_LOOKUP[k] ? DETAIL_LOOKUP[k].label : k)).join(", ");
-      const taskWord = entry.action_type === "cleaning" ? "Cleaning" : "Trash";
-      const who = entry.person.toLowerCase();
+    const isAdmin = Boolean(adminPasscode);
+    logsTableBody.innerHTML = entries.map(entry => {
+      const who = String(entry.person).toLowerCase();
+      const taskText = taskDoneText(entry);
+      const displayDate = formatDate(entry.entry_date);
+      const actionCellStyle = isAdmin ? "" : "display:none;";
       return `
-        <tr class="who-${who}">
-          <td data-label="Name"><span class="badge tone-${who}">${entry.person}</span></td>
-          <td data-label="Task Done">${taskWord} — ${labels}</td>
-          <td data-label="Date">${formatDate(entry.entry_date)}</td>
+        <tr class="who-${who}" id="row-${entry.id}" data-entry-date="${escapeHtml(entry.entry_date)}">
+          <td data-label="Name"><span class="badge tone-${who}">${escapeHtml(entry.person)}</span></td>
+          <td data-label="Task Done">${escapeHtml(taskText)}</td>
+          <td data-label="Date">${escapeHtml(displayDate)}</td>
+          <td data-label="Manage" class="admin-cell-action" style="${actionCellStyle}">
+            <button class="btn-sm btn-edit" type="button" data-action="edit" data-id="${entry.id}">Edit</button>
+            <button class="btn-sm btn-delete" type="button" data-action="delete" data-id="${entry.id}">Delete</button>
+          </td>
         </tr>`;
     }).join("");
-
-    logFeed.innerHTML = `
-      <table class="log-table">
-        <thead>
-          <tr><th>Name</th><th>Task Done</th><th>Date</th></tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>`;
   }
 
-  refreshBtn.addEventListener("click", loadLog);
+  function startEdit(id, person, taskText, entryDate) {
+    const row = document.getElementById(`row-${id}`);
+    if (!row) return;
+    row.innerHTML = `
+      <td data-label="Name"><input type="text" class="edit-input" id="edit-name-${id}" value="${escapeHtml(person)}"></td>
+      <td data-label="Task Done"><input type="text" class="edit-input" id="edit-task-${id}" value="${escapeHtml(taskText)}"></td>
+      <td data-label="Date"><input type="date" class="edit-input" id="edit-date-${id}" value="${escapeHtml(entryDate)}"></td>
+      <td data-label="Manage" class="admin-cell-action">
+        <button class="btn-sm btn-save" type="button" data-action="save" data-id="${id}">Save</button>
+        <button class="btn-sm btn-cancel" type="button" data-action="cancel">Cancel</button>
+      </td>`;
+  }
+
+  async function saveEdit(id) {
+    const nameEl = document.getElementById(`edit-name-${id}`);
+    const taskEl = document.getElementById(`edit-task-${id}`);
+    const dateEl = document.getElementById(`edit-date-${id}`);
+    const payload = {
+      id,
+      name: nameEl.value.trim(),
+      task: taskEl.value.trim(),
+      date: dateEl.value.trim(),
+    };
+    const res = await fetch("/api/logs", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "x-admin-key": adminPasscode,
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      alert("Update failed. Check admin passcode or field values.");
+      return;
+    }
+    await renderLogsTable();
+  }
+
+  async function deleteLog(id) {
+    if (!confirm("Are you sure you want to delete this row?")) return;
+    const res = await fetch(`/api/logs?id=${encodeURIComponent(id)}`, {
+      method: "DELETE",
+      headers: { "x-admin-key": adminPasscode },
+    });
+    if (!res.ok) {
+      alert("Delete failed. Check admin passcode.");
+      return;
+    }
+    await renderLogsTable();
+  }
+
+  adminLoginBtn.addEventListener("click", () => {
+    const pass = adminPassInput.value.trim();
+    if (!pass) return;
+    adminPasscode = pass;
+    localStorage.setItem("wg_admin_pass", pass);
+    adminPassInput.value = "";
+    updateAdminUI();
+    renderLogsTable();
+  });
+
+  adminLogoutBtn.addEventListener("click", () => {
+    adminPasscode = "";
+    localStorage.removeItem("wg_admin_pass");
+    updateAdminUI();
+    renderLogsTable();
+  });
+
+  refreshLogsBtn.addEventListener("click", renderLogsTable);
+
+  logsTableBody.addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-action]");
+    if (!button) return;
+    const action = button.dataset.action;
+    if (action === "cancel") {
+      renderLogsTable();
+      return;
+    }
+    const id = Number(button.dataset.id);
+    if (!Number.isInteger(id)) return;
+    if (action === "delete") {
+      deleteLog(id);
+      return;
+    }
+    if (action === "save") {
+      saveEdit(id);
+      return;
+    }
+    if (action === "edit") {
+      const row = button.closest("tr");
+      if (!row) return;
+      const name = row.querySelector('[data-label="Name"] .badge').textContent.trim();
+      const task = row.querySelector('[data-label="Task Done"]').textContent.trim();
+      const isoDate = row.dataset.entryDate || "";
+      startEdit(id, name, task, isoDate);
+    }
+  });
 
   // ---------- Init ----------
   entryDate.value = todayISO();
-  loadLog();
+  updateAdminUI();
+  renderLogsTable();
 })();

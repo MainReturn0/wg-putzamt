@@ -108,13 +108,36 @@
 
   </main>
 
-  <section class="log-section">
-    <div class="log-header">
-      <h2>Records <span class="log-sub">(newest first)</span></h2>
-      <button class="refresh-btn" id="refreshBtn" title="Refresh">⟳</button>
+  <div class="admin-portal-box">
+    <div id="admin-logged-out" class="admin-login-group">
+      <input type="password" id="admin-pass-input" placeholder="Admin Passcode" />
+      <button type="button" id="admin-login-btn" class="btn-retro">Admin Log In</button>
     </div>
-    <div class="log-feed" id="logFeed">
-      <p class="log-empty">Loading the file...</p>
+    <div id="admin-logged-in" class="admin-login-group" style="display: none;">
+      <span class="admin-status-badge">Admin Mode Active</span>
+      <button type="button" id="admin-logout-btn" class="btn-retro-secondary">Log Out</button>
+    </div>
+  </div>
+
+  <section class="log-section file-folder-section">
+    <div class="log-header folder-header">
+      <h2>File Folder <span class="log-sub">(newest first)</span></h2>
+      <button id="refresh-logs-btn" class="refresh-btn icon-btn" title="Refresh Table">⟳</button>
+    </div>
+    <div class="log-feed table-container">
+      <table class="log-table folder-table" id="logs-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Task Done</th>
+            <th>Date</th>
+            <th class="admin-cell-action" style="display: none;">Manage</th>
+          </tr>
+        </thead>
+        <tbody id="logs-table-body">
+          <tr><td colspan="4" class="log-empty">Loading logs...</td></tr>
+        </tbody>
+      </table>
     </div>
   </section>
 

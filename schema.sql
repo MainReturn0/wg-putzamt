@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS logs (
   action_type TEXT NOT NULL,      -- 'cleaning' or 'trash'
   details TEXT NOT NULL,          -- JSON array, e.g. ["kitchen","bathroom"]
   entry_date TEXT NOT NULL,       -- YYYY-MM-DD
+  task_text TEXT,                 -- optional admin-edited task description
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
