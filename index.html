@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WG Wollmarktstr. 63 — Putzamt</title>
+<title>Wollmarktstr. 63 Roommates — Chore Office</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -16,26 +16,26 @@
   <header class="letterhead">
     <div class="stamp-badge">§</div>
     <div class="letterhead-text">
-      <h1>Putzamt</h1>
-      <p class="subline">Amtliches Reinigungs- &amp; Müllprotokoll · Wollmarktstr. 63, Paderborn</p>
+      <h1>Chore Office</h1>
+      <p class="subline">Official Cleaning &amp; Trash Log · Wollmarktstr. 63, Paderborn</p>
     </div>
   </header>
 
   <main class="form-window" id="formWindow">
 
     <div class="form-progress">
-      <span class="progress-label">Formular</span>
+      <span class="progress-label">Form</span>
       <div class="progress-steps" id="progressSteps">
-        <span class="step active" data-step="1">1 Wer</span>
-        <span class="step" data-step="2">2 Was</span>
+        <span class="step active" data-step="1">1 Who</span>
+        <span class="step" data-step="2">2 What</span>
         <span class="step" data-step="3">3 Details</span>
-        <span class="step" data-step="4">4 Datum</span>
+        <span class="step" data-step="4">4 Date</span>
       </div>
     </div>
 
     <!-- STEP 1: WHO -->
     <section class="step-panel active" data-panel="1">
-      <h2 class="q">Wer bist du?</h2>
+      <h2 class="q">Who are you?</h2>
       <p class="hint">Select your name to begin the report.</p>
       <div class="card-grid three" id="personGrid">
         <button class="pick-card" data-person="Jubayer">
@@ -66,7 +66,7 @@
         <button class="pick-card big" data-action="trash">
           <span class="emoji">🗑️</span>
           <span class="name">Trash</span>
-          <span class="sub">Bio / Plastic / Paper</span>
+          <span class="sub">Organic / Plastic / Paper</span>
         </button>
       </div>
       <button class="back-link" data-back="1">← back</button>
@@ -100,7 +100,7 @@
     <!-- SUCCESS -->
     <section class="step-panel" data-panel="done">
       <div class="stamp-anim" id="stampAnim">
-        <div class="stamp-mark">ERLEDIGT</div>
+        <div class="stamp-mark">COMPLETED</div>
       </div>
       <p class="done-text" id="doneText">Filed.</p>
       <button class="submit-btn ghost" id="resetBtn">Log another task</button>
@@ -110,7 +110,7 @@
 
   <section class="log-section">
     <div class="log-header">
-      <h2>Aktenordner <span class="log-sub">(the log — newest first)</span></h2>
+      <h2>Records <span class="log-sub">(newest first)</span></h2>
       <button class="refresh-btn" id="refreshBtn" title="Refresh">⟳</button>
     </div>
     <div class="log-feed" id="logFeed">

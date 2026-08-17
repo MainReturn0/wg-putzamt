@@ -14,7 +14,7 @@
       { key: "kitchen",  label: "Kitchen",  emoji: "🍳", tone: "kitchen" },
     ],
     trash: [
-      { key: "bio",     label: "Bio",     emoji: "🥕", tone: "bio" },
+      { key: "bio",     label: "Organic", emoji: "🥕", tone: "bio" },
       { key: "plastic", label: "Plastic", emoji: "♻️", tone: "plastic" },
       { key: "paper",   label: "Paper",   emoji: "📦", tone: "paper" },
     ],
@@ -26,34 +26,34 @@
   // ---------- Funny message templates ----------
   const CLEAN_TEMPLATES = [
     p => `${p} went to war with the ${rooms()} and won. 🧼`,
-    p => `${p} restored Ordnung to the ${rooms()}. The WG breathes again.`,
+    p => `${p} restored order to the ${rooms()}. The apartment can breathe again.`,
     p => `Breaking: ${p} touched a cleaning product. The ${rooms()} did not see it coming. ✨`,
-    p => `${p} cleared the ${rooms()} boss level. Achievement unlocked: Sauberkeit.`,
+    p => `${p} cleared the ${rooms()} boss level. Achievement unlocked: Cleanliness.`,
     p => `${p} made the ${rooms()} presentable for exactly one visitor's worth of time.`,
-    p => `${p} scrubbed the ${rooms()} like the Wohnungsübergabe depends on it.`,
+    p => `${p} scrubbed the ${rooms()} like the move-out inspection depends on it.`,
     p => `${p} vs. the ${rooms()}: final score, ${p} 1 — Chaos 0.`,
     p => `Witnesses report ${p} was seen holding a sponge near the ${rooms()}. Miracles happen.`,
     p => `${p} has entered the ${rooms()} chat. Grime has left the ${rooms()} chat.`,
     p => `The ${rooms()} briefly considered filing a complaint. Then ${p} showed up.`,
     p => `${p} performed an emergency intervention on the ${rooms()}. Patient stable. 🩺`,
-    p => `${p} channeled their inner Hausmeister and the ${rooms()} obeyed.`,
-    p => `Local hero ${p} defends the ${rooms()} from certain WG-shame once again.`,
+    p => `${p} channeled their inner building caretaker and the ${rooms()} obeyed.`,
+    p => `Local hero ${p} defended the ${rooms()} from roommate shame once again.`,
     p => `${p} did the thing nobody asked for out loud but everyone was thinking: cleaned the ${rooms()}.`,
     p => `${p} left the ${rooms()} cleaner than they found their own motivation to do it.`,
     p => `Sponsored by ${p}: today's episode of "The ${rooms()} Strikes Back... and Loses."`,
   ];
 
   const TRASH_TEMPLATES = [
-    p => `${p} yeeted the ${bins()} down to the bins. Mutter Erde says danke. 🌍`,
-    p => `${p} completed today's Mülltrennung like a true Ordnungsamt inspector.`,
+    p => `${p} yeeted the ${bins()} to the dumpsters. Planet Earth says thanks. 🌍`,
+    p => `${p} sorted today's trash like a true recycling inspector.`,
     p => `${p} hauled the ${bins()} down — heroic multi-flight-of-stairs edition. 🚮`,
     p => `${p} sorted the ${bins()} with German-level precision.`,
-    p => `${p} freed the kitchen from the ${bins()}. One small step for man, one giant step for Mülltrennung.`,
+    p => `${p} freed the kitchen from the ${bins()}. One small step for a roommate, one giant step for trash sorting.`,
     p => `${p} took out the ${bins()} before anyone had to ask twice. Legend.`,
-    p => `${p} has achieved perfect Mülltrennung karma with the ${bins()} run.`,
+    p => `${p} has achieved perfect recycling karma with the ${bins()} run.`,
     p => `Somewhere, a German neighbor nodded in approval as ${p} sorted the ${bins()}.`,
     p => `${p} carried the ${bins()} past the door like it owed them money.`,
-    p => `${p} single-handedly prevented a smell-based WG emergency: ${bins()}, taken out.`,
+    p => `${p} single-handedly prevented a smell-based roommate emergency: ${bins()}, taken out.`,
     p => `Plot twist: ${p} remembered bin day. The ${bins()} are gone.`,
     p => `${p} completed a stealth mission: get the ${bins()} out before Razim/Mahin/Jubayer notices it was full.`,
     p => `The ${bins()} have been evicted from the apartment, courtesy of ${p}.`,
@@ -63,17 +63,17 @@
   ];
 
   const DONE_TEMPLATES = [
-    (p, d) => `${p}'s report has been filed for ${d}. The Amt is pleased.`,
+    (p, d) => `${p}'s report has been filed for ${d}. The office is pleased.`,
     (p, d) => `Stamped, sealed, delivered — ${p} is officially off the hook for ${d}.`,
-    (p, d) => `${p}'s ${d} report now lives in the Aktenordner forever. History has been made.`,
+    (p, d) => `${p}'s ${d} report is now in the records forever. History has been made.`,
     (p, d) => `Filed under "Reasons ${p} is a good roommate," dated ${d}.`,
-    (p, d) => `${p}'s paperwork is in order. The Putzamt has no further questions about ${d}.`,
+    (p, d) => `${p}'s paperwork is in order. The Chore Office has no further questions about ${d}.`,
     (p, d) => `Officially logged: ${p} did a thing on ${d}. The bureaucracy thanks you.`,
   ];
 
   const EMPTY_LOG_TEMPLATES = [
     "No entries yet — be the first to earn your stamp.",
-    "The Aktenordner is suspiciously empty. Someone fix that.",
+    "The records folder is suspiciously empty. Someone fix that.",
     "Zero reports on file. The bins are judging you.",
     "This is awkward — nobody has filed anything yet.",
   ];
